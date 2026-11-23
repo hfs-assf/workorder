@@ -1,14 +1,26 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+import { useMemo } from "react";
+import {
+  ImageStyle,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { darkTheme, lightTheme, Theme } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
-export function useTheme() {
+export function useTheme(): Theme {
   const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? 'dark' : 'light';
+  return scheme === "dark" ? darkTheme : lightTheme;
+}
 
-  return Colors[theme];
+type NamedStyles<T> = { [K in keyof T]: ViewStyle | TextStyle | ImageStyle };
+
+export function makeStyles<T extends NamedStyles<T>>(
+  factory: (theme: Theme) => T,
+) {
+  return function useStyles(): T {
+    const theme = useTheme();
+    return useMemo(() => StyleSheet.create(factory(theme)), [theme]);
+  };
 }
