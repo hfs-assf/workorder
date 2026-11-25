@@ -80,3 +80,23 @@ export function getGreeting(now = new Date()) {
   if (h < 19) return "Good evening";
   return "Good night";
 }
+
+/** "Just now", "5 min ago", "3 h ago", "Yesterday", "4 days ago", then the date */
+export function timeAgo(d: Date, now = new Date()) {
+  const min = Math.floor((now.getTime() - d.getTime()) / 60_000);
+  if (min < 1) return "Just now";
+  if (min < 60) return `${min} min ago`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} h ago`;
+  const days = Math.floor(h / 24);
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  return formatDate(d);
+}
+
+/** Whole days from today to `d` (negative = in the past) */
+export function daysFromToday(d: Date, now = new Date()) {
+  return Math.round(
+    (startOfDay(d).getTime() - startOfDay(now).getTime()) / 86_400_000,
+  );
+}

@@ -1,12 +1,12 @@
+import { Toaster } from "@/components/ui";
+import { FONT_FILES } from "@/constants/fonts";
+import { useTheme } from "@/hooks/use-theme";
+import { loadThemeMode } from "@/store/theme-mode";
 import { useFonts } from "expo-font";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-
-import { Toaster } from "@/components/ui";
-import { FONT_FILES } from "@/constants/fonts";
-import { useTheme } from "@/hooks/use-theme";
+import { useEffect, useState } from "react";
 
 // Keep the splash screen up until fonts are ready (must be called at module scope)
 SplashScreen.preventAutoHideAsync();
@@ -19,13 +19,21 @@ SplashScreen.preventAutoHideAsync();
  */
 export default function RootLayout() {
   const t = useTheme();
-  const [loaded, error] = useFonts(FONT_FILES);
+  const [fontsLoaded, fontError] = useFonts(FONT_FILES);
+  const [themeLoaded, setThemeLoaded] = useState(false);
+
+  // Apply the saved Light/Dark/System choice before the first screen shows (no flash)
+  useEffect(() => {
+    loadThemeMode().finally(() => setThemeLoaded(true));
+  }, []);
+
+  const ready = (fontsLoaded || !!fontError) && themeLoaded;
 
   useEffect(() => {
-    if (loaded || error) SplashScreen.hide();
-  }, [loaded, error]);
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
 
-  if (!loaded && !error) return null;
+  if (!ready) return null;
 
   const navTheme = t.dark ? DarkTheme : DefaultTheme;
 

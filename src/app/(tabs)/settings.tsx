@@ -8,15 +8,25 @@ import {
   Avatar,
   Card,
   CardDivider,
+  Option,
   Row,
   Screen,
+  SegmentedControl,
   Stack,
   Switch,
 } from "@/components/ui";
+import { setThemeMode, ThemeMode, useThemeMode } from "@/store/theme-mode";
+
+const THEME_OPTIONS: Option<ThemeMode>[] = [
+  { value: "light", label: "Light", icon: "sunny-outline" },
+  { value: "dark", label: "Dark", icon: "moon-outline" },
+  { value: "system", label: "System", icon: "phone-portrait-outline" },
+];
 
 export default function SettingsScreen() {
   const [push, setPush] = useState(true);
   const [offline, setOffline] = useState(false);
+  const themeMode = useThemeMode();
 
   return (
     <Screen
@@ -41,7 +51,19 @@ export default function SettingsScreen() {
             </Stack>
           </Row>
         </Card>
-
+        <Card>
+          <AppText variant="label" color="textMuted">
+            APPEARANCE
+          </AppText>
+          <SegmentedControl<ThemeMode>
+            options={THEME_OPTIONS}
+            value={themeMode}
+            onChange={setThemeMode}
+          />
+          <AppText variant="caption" color="textMuted">
+            System follows your phone's light/dark setting.
+          </AppText>
+        </Card>
         <Card>
           <AppText variant="label" color="textMuted">
             NOTIFICATIONS
