@@ -1,3 +1,5 @@
+import { useHideTabBarOnScroll } from "@/hooks/tab-bar-visibility";
+import { makeStyles, useTheme } from "@/hooks/use-theme";
 import { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
@@ -7,13 +9,12 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import Animated from "react-native-reanimated";
 import {
   Edge,
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-
-import { makeStyles, useTheme } from "@/hooks/use-theme";
 
 type Props = {
   children: ReactNode;
@@ -42,7 +43,7 @@ export function Screen({
   const t = useTheme();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
-
+  const onScroll = useHideTabBarOnScroll();
   // Space taken by the floating bar: bar height + gap under it + home-indicator area
   const tabBarSpace = tabBar
     ? t.layout.tabBarHeight +
@@ -73,7 +74,17 @@ export function Screen({
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {scroll ? (
+        {scroll && tabBar ? (
+          // Above the tab bar: scrolling down hides the bar, scrolling up shows it
+          <Animated.ScrollView
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+            contentContainerStyle={[styles.grow, contentStyle]}
+            keyboardShouldPersistTaps="handled"
+          >
+            {children}
+          </Animated.ScrollView>
+        ) : scroll ? (
           <ScrollView
             contentContainerStyle={[styles.grow, contentStyle]}
             keyboardShouldPersistTaps="handled"

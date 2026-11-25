@@ -1,3 +1,7 @@
+import { AppText, BadgeCount, PressableScale } from "@/components/ui";
+import { showTabBar, tabBarHidden } from "@/hooks/tab-bar-visibility";
+import { makeStyles, useTheme } from "@/hooks/use-theme";
+import { alpha } from "@/utils/color";
 import { BlurView } from "expo-blur";
 import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { useEffect } from "react";
@@ -7,10 +11,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-
-import { AppText, BadgeCount, PressableScale } from "@/components/ui";
-import { makeStyles, useTheme } from "@/hooks/use-theme";
-import { alpha } from "@/utils/color";
 
 import { CenterFab } from "./CenterFab";
 
@@ -39,6 +39,21 @@ export function BottomTabBar({
 
   const routes = state.routes;
   const middle = Math.ceil(routes.length / 2); // FAB goes between the two halves
+
+  const bottomPad = Math.max(insets.bottom, t.layout.tabBarGap);
+
+  // New tab → always show the bar again
+  useEffect(() => {
+    showTabBar();
+  }, [state.index]);
+
+  // Slide fully below the screen edge when hidden (bar + gap + a little extra for the shadow).
+  // Computed OUTSIDE the animation: worklets should only read plain numbers, not the theme object.
+  const hideDistance = t.layout.tabBarHeight + bottomPad + 24;
+  const hideAnim = useAnimatedStyle(() => ({
+    transform: [{ translateY: tabBarHidden.value * hideDistance }],
+    opacity: 1 - tabBarHidden.value * 0.3,
+  }));
 
   const renderTab = (route: (typeof routes)[number], index: number) => {
     const { options } = descriptors[route.key];
@@ -72,7 +87,7 @@ export function BottomTabBar({
   };
 
   return (
-    <View
+    <Animated.View
       pointerEvents="box-none"
       style={[
         styles.host,
@@ -104,7 +119,7 @@ export function BottomTabBar({
         ) : null}
         {routes.slice(middle).map((r, i) => renderTab(r, i + middle))}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
