@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 
 import { AppHeader } from "@/components/navigation";
 import {
@@ -35,7 +35,7 @@ export default function OrdersScreen() {
     >
       <Stack gap="md">
         {ORDERS.map((wo) => (
-          <Card key={wo.id} onPress={() => router.push("/create")}>
+          <Card key={wo.id} onPress={() => router.push("/create" as Href)}>
             <Row>
               <AppText variant="label" color="textMuted">
                 {wo.id}

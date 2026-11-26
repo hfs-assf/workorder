@@ -16,6 +16,7 @@ import {
   Switch,
 } from "@/components/ui";
 import { setThemeMode, ThemeMode, useThemeMode } from "@/store/theme-mode";
+import { ROLE_LABEL, useCurrentUser } from "@/store/user"; // ← NEW (1): import
 
 const THEME_OPTIONS: Option<ThemeMode>[] = [
   { value: "light", label: "Light", icon: "sunny-outline" },
@@ -27,6 +28,7 @@ export default function SettingsScreen() {
   const [push, setPush] = useState(true);
   const [offline, setOffline] = useState(false);
   const themeMode = useThemeMode();
+  const user = useCurrentUser(); // ← NEW (2): read the profile
 
   return (
     <Screen
@@ -37,20 +39,22 @@ export default function SettingsScreen() {
       <Stack gap="lg">
         <Card>
           <Row gap="md">
+            {/* ← NEW (3): name, photo, role and area come from the profile */}
             <Avatar
-              name="Token"
-              uri="https://i.pravatar.cc/150?img=12"
+              name={user?.name ?? "?"}
+              uri={user?.avatarUri}
               size="lg"
               status="online"
             />
             <Stack gap="xs" flex>
-              <AppText variant="heading">Token</AppText>
+              <AppText variant="heading">{user?.name}</AppText>
               <AppText variant="caption" color="textMuted">
-                Technician · Workshop A
+                {user ? `${ROLE_LABEL[user.role]} · ${user.area.name}` : ""}
               </AppText>
             </Stack>
           </Row>
         </Card>
+
         <Card>
           <AppText variant="label" color="textMuted">
             APPEARANCE
@@ -64,6 +68,7 @@ export default function SettingsScreen() {
             System follows your phone's light/dark setting.
           </AppText>
         </Card>
+
         <Card>
           <AppText variant="label" color="textMuted">
             NOTIFICATIONS

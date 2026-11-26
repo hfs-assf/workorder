@@ -8,11 +8,13 @@ const hoursAgo = (h: number) => new Date(now - h * 3_600_000);
 const daysAgo = (d: number) => new Date(now - d * 86_400_000);
 const today = startOfDay(new Date());
 
+/** New maintenance jobs assigned to me, waiting for me to acknowledge */
 export const PENDING_ACKS: PendingAck[] = [
   {
     id: "WO-1031",
-    title: "Replace hydraulic hose",
-    location: "Press Line 2",
+    title: "Kitchen exhaust fan not working",
+    facility: "mess",
+    location: "Mess Hall A · Kitchen",
     assignedBy: "Hendra Wijaya",
     assignedAt: hoursAgo(1),
     dueAt: today,
@@ -20,8 +22,9 @@ export const PENDING_ACKS: PendingAck[] = [
   },
   {
     id: "WO-1029",
-    title: "Lubricate conveyor bearings",
-    location: "Workshop Bay 3",
+    title: "AC not cooling in bedroom",
+    facility: "house",
+    location: "House B-12",
     assignedBy: "Dewi Anggraini",
     assignedAt: hoursAgo(5),
     dueAt: addDays(today, 1),
@@ -29,38 +32,50 @@ export const PENDING_ACKS: PendingAck[] = [
   },
   {
     id: "WO-1027",
-    title: "Monthly fire extinguisher check",
-    location: "Building A",
-    assignedBy: "Hendra Wijaya",
+    title: "Leaking tap in bathroom",
+    facility: "house",
+    location: "House C-04",
+    assignedBy: "Dewi Anggraini",
     assignedAt: daysAgo(1),
-    dueAt: addDays(today, 4),
+    dueAt: addDays(today, 2),
     priority: "medium",
+  },
+  {
+    id: "WO-1024",
+    title: "Replace dining area lights",
+    facility: "mess",
+    location: "Mess Hall B · Dining area",
+    assignedBy: "Hendra Wijaya",
+    assignedAt: daysAgo(2),
+    dueAt: addDays(today, 5),
+    priority: "low",
   },
 ];
 
+/** Requests I sent that are still waiting for approval */
 export const APPLICATIONS: Application[] = [
   {
     id: "APP-221",
-    type: "Spare part request",
-    title: "V-belt B-52 × 4",
+    type: "Material request",
+    title: "AC refrigerant R32, 1 can",
     submittedAt: hoursAgo(20),
     step: 1,
-    waitingFor: "Supervisor",
+    waitingFor: "Housing supervisor",
   },
   {
     id: "APP-218",
-    type: "Work permit",
-    title: "Hot work: welding at Bay 5",
+    type: "Contractor access",
+    title: "Pest control at Mess Hall A",
     submittedAt: daysAgo(4),
     step: 1,
-    waitingFor: "Safety officer",
+    waitingFor: "Mess manager",
   },
   {
     id: "APP-215",
-    type: "Overtime",
-    title: "Saturday, 4 hours",
+    type: "Key replacement",
+    title: "Front door key, House A-07",
     submittedAt: hoursAgo(2),
     step: 0,
-    waitingFor: "Supervisor",
+    waitingFor: "Housing supervisor",
   },
 ];

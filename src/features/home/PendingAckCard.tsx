@@ -6,19 +6,26 @@ import {
   BadgeTone,
   Card,
   Icon,
+  IconName, // ← FIX 1: added
   Row,
   Spacer,
   Stack,
 } from "@/components/ui";
 import { daysFromToday, formatRelative, timeAgo } from "@/utils/date";
 
-import { PendingAck, Priority } from "./types";
+import { Facility, PendingAck, Priority } from "./types";
 
 const PRIORITY: Record<Priority, { label: string; tone: BadgeTone }> = {
   low: { label: "Low", tone: "neutral" },
   medium: { label: "Medium", tone: "primary" },
   high: { label: "High", tone: "warning" },
   urgent: { label: "Urgent", tone: "danger" },
+};
+
+/** Icon for each kind of building, so the user sees at a glance where the job is */
+const FACILITY: Record<Facility, { icon: IconName }> = {
+  house: { icon: "home-outline" },
+  mess: { icon: "restaurant-outline" },
 };
 
 type Props = {
@@ -30,6 +37,7 @@ type Props = {
 /** A new assignment: what, where, who sent it, when it's due → one clear "Acknowledge" button. */
 export function PendingAckCard({ item, onAcknowledge, onOpen }: Props) {
   const priority = PRIORITY[item.priority];
+  const facility = FACILITY[item.facility];
   const dueIn = daysFromToday(item.dueAt);
   const dueColor = dueIn < 0 ? "danger" : dueIn === 0 ? "warning" : "textMuted";
 
@@ -47,8 +55,9 @@ export function PendingAckCard({ item, onAcknowledge, onOpen }: Props) {
       {/* 2. What and where */}
       <Stack gap="xs">
         <AppText variant="heading">{item.title}</AppText>
+        {/* ← FIX 2: this row replaces the old one with "location-outline" */}
         <Row gap="xs">
-          <Icon name="location-outline" size={14} color="textMuted" />
+          <Icon name={facility.icon} size={14} color="textMuted" />
           <AppText variant="caption" color="textMuted">
             {item.location}
           </AppText>

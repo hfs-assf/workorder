@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 
 import { BottomTabBar } from "@/components/navigation";
@@ -41,7 +41,10 @@ export default function TabsLayout() {
         sceneStyle: { backgroundColor: t.colors.background },
       }}
       tabBar={(props) => (
-        <BottomTabBar {...props} onFabPress={() => router.push("/create")} />
+        <BottomTabBar
+          {...props}
+          onFabPress={() => router.push("/create" as Href)}
+        />
       )}
     >
       <Tabs.Screen

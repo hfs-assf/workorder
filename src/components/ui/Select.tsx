@@ -9,7 +9,8 @@ import { AppInput } from "./AppInput";
 import { AppText } from "./AppText";
 import { BottomSheet } from "./BottomSheet";
 import { FieldLabel, FieldMessage, FieldTrigger } from "./Field";
-import { IconName } from "./Icon";
+import { Icon, IconName } from "./Icon";
+import { PressableScale } from "./PressableScale";
 import { Option } from "./RadioGroup";
 
 type Props<T extends string> = {
@@ -70,7 +71,7 @@ export function Select<T extends string>({
     <View style={styles.wrapper}>
       <FieldLabel label={label} error={error} active={open} />
 
-      {/* Trigger: same box as AppInput */}
+      {/* ① THE FIELD you tap (shows the selected value) */}
       <FieldTrigger
         valueText={selected?.label}
         placeholder={placeholder}
@@ -115,16 +116,46 @@ export function Select<T extends string>({
           renderItem={({ item }) => {
             const isSelected = item.value === value;
             return (
-              <FieldTrigger
-                valueText={selected?.label}
-                placeholder={placeholder}
-                icon={selected?.icon ?? leftIcon}
-                onPress={() => setOpen(true)}
-                active={open}
-                error={error}
-                disabled={disabled}
-                accessibilityLabel={label}
-              />
+              // ② EACH OPTION ROW in the sheet (NOT a FieldTrigger)
+              <PressableScale
+                onPress={() => pick(item.value)}
+                disabled={item.disabled}
+                haptic={false}
+                scaleTo={0.98}
+                accessibilityRole="radio"
+                accessibilityState={{
+                  selected: isSelected,
+                  disabled: item.disabled,
+                }}
+                style={[
+                  styles.option,
+                  isSelected && styles.optionSelected,
+                  item.disabled && styles.disabled,
+                ]}
+              >
+                {item.icon ? (
+                  <Icon
+                    name={item.icon}
+                    color={isSelected ? "primary" : "textMuted"}
+                  />
+                ) : null}
+                <View style={styles.optionTexts}>
+                  <AppText
+                    style={isSelected ? t.font("semibold") : undefined}
+                    color={isSelected ? "primary" : "text"}
+                  >
+                    {item.label}
+                  </AppText>
+                  {item.description ? (
+                    <AppText variant="caption" color="textMuted">
+                      {item.description}
+                    </AppText>
+                  ) : null}
+                </View>
+                {isSelected ? (
+                  <Icon name="checkmark-circle" color="primary" />
+                ) : null}
+              </PressableScale>
             );
           }}
         />
@@ -135,7 +166,6 @@ export function Select<T extends string>({
 
 const useStyles = makeStyles((t) => ({
   wrapper: { gap: t.spacing.xs + 2 },
-  error: { borderColor: t.colors.danger },
   disabled: { opacity: 0.5 },
   search: { paddingBottom: t.spacing.sm },
   list: { paddingBottom: t.spacing.md, gap: t.spacing.xs },

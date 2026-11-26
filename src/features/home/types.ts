@@ -7,7 +7,8 @@ export type Facility = "house" | "mess";
 export type PendingAck = {
   id: string; // WO-1031
   title: string;
-  location: string;
+  facility: Facility;
+  location: string; // "House B-12", "Mess Hall A · Kitchen"
   assignedBy: string;
   assignedAt: Date;
   dueAt: Date;
